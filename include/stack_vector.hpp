@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STACKVECTOR
+#define STACKVECTOR
 
 #include <cstddef>
 #include <stdexcept>
@@ -38,3 +39,5 @@ public:
   std::size_t size() const noexcept { return data_.size(); }
   std::size_t capacity() const noexcept { return data_.capacity(); }
 };
+
+#endif

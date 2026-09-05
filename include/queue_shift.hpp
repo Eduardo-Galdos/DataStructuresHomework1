@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QUEUESHIFT
+#define QUEUESHIFT
 
 #include <cstddef>
 #include <stdexcept>
@@ -43,27 +44,88 @@ public:
 
 template<typename T>
 void QueueShift<T>::grow() {
-  throw std::logic_error("TODO QueueShift::grow");
+  if(capacity_ == 0)
+    capacity_ = 1;
+  
+  capacity_ = capacity_ * 2;
+  T* dataTemp = new T[capacity_];
+
+  for(size_t i = 0; i < size_; i++){
+    dataTemp[i] = data_[i];
+    moves_++;
+  }
+  
+  delete[] data_;
+
+  data_ = dataTemp;
+  return;
+
 }
 
 template<typename T>
-QueueShift<T>::QueueShift(const QueueShift &) {
-  throw std::logic_error("TODO QueueShift copy constructor");
+QueueShift<T>::QueueShift(const QueueShift &other) {
+  if(other.data_ == nullptr)
+    throw std::logic_error("Cant construct from a null data");
+
+  data_ = new T[other.capacity_];
+  for(size_t i = 0; i < other.size_; i++)
+    data_[i] = other.data_[i];
+
+  capacity_ = other.capacity_;
+  size_ = other.size_;
+  moves_ = other.moves_;
 }
 
 template<typename T>
-QueueShift<T>::QueueShift(QueueShift &&) noexcept {
-  // TODO: transferir ownership y dejar el origen vacío.
+QueueShift<T>::QueueShift(QueueShift &&other) noexcept {
+  
+  data_ = other.data_;
+  capacity_ = other.capacity_;
+  size_ = other.size_;
+  moves_ = other.moves_;
+
+  other.data_ = nullptr;
+  other.capacity_ = 0;
+  other.size_ = 0;
+  other.moves_ = 0;  
 }
 
 template<typename T>
-QueueShift<T> &QueueShift<T>::operator=(const QueueShift &) {
-  throw std::logic_error("TODO QueueShift copy assignment");
+QueueShift<T> &QueueShift<T>::operator=(const QueueShift &other) {
+  if(other.data_ == nullptr)
+    throw std::logic_error("Cant copy from a null data");
+
+  delete[] data_;
+  data_ = new T[other.capacity_];
+
+  for(size_t i = 0; i < other.size_; i++)
+    data_[i] = other.data_[i];
+
+  size_ = other.size_;
+  capacity_ = other.capacity_;
+  moves_ = other.moves_;
+
+  return *this;
 }
 
 template<typename T>
-QueueShift<T> &QueueShift<T>::operator=(QueueShift &&) noexcept {
+QueueShift<T> &QueueShift<T>::operator=(QueueShift &&other) noexcept {
   // TODO: liberar el recurso actual, transferir ownership y vaciar el origen.
+  if(this == &other)
+    throw std::logic_error("Cant move an object to itself");
+
+  delete[] data_;
+  
+  data_ = other.data_;
+  capacity_ = other.capacity_;
+  moves_ = other.moves_;
+  size_ = other.size_;
+
+  other.data_ = nullptr;
+  other.capacity_ = 0;
+  other.moves_ = 0;
+  other.size_= 0;
+  
   return *this;
 }
 
@@ -73,26 +135,55 @@ QueueShift<T>::~QueueShift() {
 }
 
 template<typename T>
-void QueueShift<T>::push(const T &) {
-  throw std::logic_error("TODO QueueShift::push(const T&)");
+void QueueShift<T>::push(const T &x) {
+  if(size_ == capacity_)
+    grow();
+
+  data_[size_] = x;
+  size_++;
+
+  return;
 }
 
 template<typename T>
-void QueueShift<T>::push(T &&) {
+void QueueShift<T>::push(T &&x) {
   throw std::logic_error("TODO QueueShift::push(T&&)");
+  if(size_ == capacity_)
+    grow();
+
+  data_[size_] = std::move(x);
+  size_++;
+
+  return;
 }
 
 template<typename T>
 void QueueShift<T>::pop() {
-  throw std::logic_error("TODO QueueShift::pop");
+  if(empty())
+    throw std::logic_error("Cant pop an empty queue");
+
+  for(size_t i; i < size_ - 1; i++){
+    data_[i] = data_[i + 1];
+    moves_++;
+  }
+
+  size_--;
+
+  return;
 }
 
 template<typename T>
 T &QueueShift<T>::front() {
-  throw std::logic_error("TODO QueueShift::front");
+  if(empty())
+    throw std::logic_error("Cant get front of an empty queue");
+  return data_[size_ - 1];
 }
 
 template<typename T>
 const T &QueueShift<T>::front() const {
-  throw std::logic_error("TODO QueueShift::front const");
+  if(empty())
+    throw std::logic_error("Cant get front of an empty queue");
+  return data_[size_ - 1];
 }
+
+#endif
