@@ -72,7 +72,7 @@ QueueCircular<T>::QueueCircular(const QueueCircular &other) {
   other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
   
   for(std::size_t i = 0; i < other.size_; i++)
-    data_[i] = other.data_[i];
+    data_[i] = other.data_[physical_index(i)];
 
   head_ = other.head_;
   size_ = other.size_; 
@@ -106,7 +106,7 @@ QueueCircular<T> &QueueCircular<T>::operator=(const QueueCircular &other) {
   other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
   
   for(std::size_t i = 0; i < other.size_; i++)
-    data_[i] = other.data_[i];
+    data_[i] = other.data_[physical_index(i)];
 
   capacity_ = other.capacity_;
   size_ = other.size_;
