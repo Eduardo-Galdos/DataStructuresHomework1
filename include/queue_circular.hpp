@@ -49,17 +49,20 @@ std::size_t QueueCircular<T>::physical_index(std::size_t logical) const noexcept
 
 template<typename T>
 void QueueCircular<T>::grow() {
-  capacity_ == 0 ? 1 : capacity_ = capacity_ * 2;
+  std::size_t new_cap;
+  capacity_ == 0 ? new_cap = 1 : new_cap = capacity_ * 2;
 
-  T* dataTemp = new T[capacity_];
+  T* dataTemp = new T[new_cap];
   for(std::size_t i = 0; i < size_; i++){
     dataTemp[i] = std::move(data_[physical_index(i)]);
     moves_++;
   }
-  
+
+  delete[] data_;
   data_ = dataTemp;
   head_ = 0;
-  
+  capacity_ = new_cap;
+
   return;
 }
 
