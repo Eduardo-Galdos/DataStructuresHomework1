@@ -59,7 +59,7 @@ template<typename T>
 
 StackRaw<T>::StackRaw(const StackRaw &other) {
 
-  other.capacity_ == 0 ? this->data = nullptr : this->data_ =  new T[other.capacity_];
+  other.capacity_ == 0 ? this->data_ = nullptr : this->data_ =  new T[other.capacity_];
 
   for(size_t i = 0; i < other.size_; i++)
     this->data_[i] = other.data_[i];
@@ -84,7 +84,7 @@ StackRaw<T>::StackRaw(StackRaw &&other) noexcept {
 template<typename T>
 StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
   
-  if(this = &other)
+  if(this == &other)
     return *this;
   delete[] this->data_;
   other.capacity_ == 0 ? data_ = nullptr : this->data_ = new T[other.capacity_];

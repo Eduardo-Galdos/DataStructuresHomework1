@@ -94,7 +94,7 @@ QueueShift<T> &QueueShift<T>::operator=(const QueueShift &other) {
   if(this == &other)
     return *this;
   delete[] data_;
-  other.capacity == 0 ? data = nullptr : data_ = new T[other.capacity_];
+  other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
 
   for(size_t i = 0; i < other.size_; i++)
     data_[i] = other.data_[i];
