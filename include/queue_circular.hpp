@@ -49,27 +49,89 @@ std::size_t QueueCircular<T>::physical_index(std::size_t logical) const noexcept
 
 template<typename T>
 void QueueCircular<T>::grow() {
-  throw std::logic_error("TODO QueueCircular::grow");
+  capacity_ == 0 ? 1 : capacity_ = capacity_ * 2;
+
+  T* dataTemp = new T[capacity_];
+  for(std::size_t i = 0; i < size_; i++){
+    dataTemp[i] = std::move(data_[physical_index(i)]);
+    moves_++;
+  }
+  
+  data_ = dataTemp;
+  head_ = 0;
+  
+  return;
 }
 
 template<typename T>
-QueueCircular<T>::QueueCircular(const QueueCircular &) {
-  throw std::logic_error("TODO QueueCircular copy constructor");
+QueueCircular<T>::QueueCircular(const QueueCircular &other) {
+  
+  other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
+  
+  for(std::size_t i = 0; i < other.size_; i++)
+    data_[i] = other.data_[i];
+
+  head_ = other.head_;
+  size_ = other.size_; 
+  capacity_ = other.capacity_;
+  moves_ = other.moves_;
+
 }
 
 template<typename T>
-QueueCircular<T>::QueueCircular(QueueCircular &&) noexcept {
-  // TODO: transferir ownership y dejar el origen vacío.
+QueueCircular<T>::QueueCircular(QueueCircular &&other) noexcept {
+  
+  data_ = other.data_;
+  head_ = other.head_;
+  moves_ = other.moves_;
+  size_ = other.size_;
+  capacity_ = other.capacity_;
+
+  other.data_ = nullptr;
+  other.head_ = 0;
+  other.moves_ = 0;
+  other.size_ = 0;
+  other.capacity_ = 0;
 }
 
 template<typename T>
-QueueCircular<T> &QueueCircular<T>::operator=(const QueueCircular &) {
-  throw std::logic_error("TODO QueueCircular copy assignment");
+QueueCircular<T> &QueueCircular<T>::operator=(const QueueCircular &other) {
+  if(this == &other)
+    return *this;
+  
+  delete data_;
+  other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
+  
+  for(std::size_t i = 0; i < other.size_; i++)
+    data_[i] = other.data_[i];
+
+  capacity_ = other.capacity_;
+  size_ = other.size_;
+  moves_ = other.moves_;
+  head_ = other.head_;
+
+  return *this;
 }
 
 template<typename T>
-QueueCircular<T> &QueueCircular<T>::operator=(QueueCircular &&) noexcept {
-  // TODO: liberar el recurso actual, transferir ownership y vaciar el origen.
+QueueCircular<T> &QueueCircular<T>::operator=(QueueCircular &&other) noexcept {
+  if(this == &other)
+    return *this;
+
+  delete data_;
+
+  data_ = other.data_;
+  head_ = other.head_;
+  size_ = other.size_;
+  capacity_ = other.capacity_;
+  moves_ = other.moves_;
+
+  other.size_ = 0;
+  other.head_ = 0;
+  other.data_ = nullptr;
+  other.moves_ = 0;
+  other.size_ = 0;
+
   return *this;
 }
 
@@ -79,26 +141,46 @@ QueueCircular<T>::~QueueCircular() {
 }
 
 template<typename T>
-void QueueCircular<T>::push(const T &) {
-  throw std::logic_error("TODO QueueCircular::push(const T&)");
+void QueueCircular<T>::push(const T &x) {
+  if(size_ == capacity_)
+    grow();
+
+  data_[physical_index(size_)] = x;
+  size_++;
+
+  return;
 }
 
 template<typename T>
-void QueueCircular<T>::push(T &&) {
-  throw std::logic_error("TODO QueueCircular::push(T&&)");
+void QueueCircular<T>::push(T &&x) {
+  if(size_ == capacity_)
+    grow();
+
+  data_[physical_index(size_)] = std::move(x);
+  size_++;
 }
 
 template<typename T>
 void QueueCircular<T>::pop() {
-  throw std::logic_error("TODO QueueCircular::pop");
+  if(empty())
+    throw std::out_of_range("Cant pop an empty queue");
+
+  size_--;
+  head_ = (head_ + 1) % capacity_;
 }
 
 template<typename T>
 T &QueueCircular<T>::front() {
-  throw std::logic_error("TODO QueueCircular::front");
+  if(empty())
+    throw std::out_of_range("Cant get front of an empty queue");
+
+  return data_[head_];
 }
 
 template<typename T>
 const T &QueueCircular<T>::front() const {
-  throw std::logic_error("TODO QueueCircular::front const");
+  if(empty())
+    throw std::out_of_range("Cant get front of an empty queue");
+
+  return data_[head_];
 }

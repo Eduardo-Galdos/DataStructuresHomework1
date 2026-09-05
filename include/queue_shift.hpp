@@ -50,7 +50,7 @@ void QueueShift<T>::grow() {
   capacity_ = capacity_ * 2;
   T* dataTemp = new T[capacity_];
 
-  for(size_t i = 0; i < size_; i++){
+  for(std::size_t i = 0; i < size_; i++){
     dataTemp[i] = std::move(data_[i]);
     moves_++;
   }
@@ -67,7 +67,7 @@ QueueShift<T>::QueueShift(const QueueShift &other) {
 
   other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
   
-  for(size_t i = 0; i < other.size_; i++)
+  for(std::size_t i = 0; i < other.size_; i++)
     data_[i] = other.data_[i];
 
   capacity_ = other.capacity_;
@@ -96,7 +96,7 @@ QueueShift<T> &QueueShift<T>::operator=(const QueueShift &other) {
   delete[] data_;
   other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
 
-  for(size_t i = 0; i < other.size_; i++)
+  for(std::size_t i = 0; i < other.size_; i++)
     data_[i] = other.data_[i];
 
   size_ = other.size_;
@@ -159,7 +159,7 @@ void QueueShift<T>::pop() {
   if(empty())
     throw std::out_of_range("Cant pop an empty queue");
 
-  for(size_t i = 0; i < size_ - 1; i++){
+  for(std::size_t i = 0; i < size_ - 1; i++){
     data_[i] = std::move(data_[i + 1]);
     moves_++;
   }

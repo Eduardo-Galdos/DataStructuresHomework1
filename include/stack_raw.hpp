@@ -45,7 +45,7 @@ void StackRaw<T>::grow() {
   capacity_ = capacity_ * 2;
   T* dataTemp = new T[capacity_];
 
-  for(size_t i = 0; i < size_; i++)
+  for(std::size_t i = 0; i < size_; i++)
     dataTemp[i] = std::move(data_[i]);
 
   delete[] data_; 
@@ -61,7 +61,7 @@ StackRaw<T>::StackRaw(const StackRaw &other) {
 
   other.capacity_ == 0 ? this->data_ = nullptr : this->data_ =  new T[other.capacity_];
 
-  for(size_t i = 0; i < other.size_; i++)
+  for(std::size_t i = 0; i < other.size_; i++)
     this->data_[i] = other.data_[i];
   
 
@@ -90,7 +90,7 @@ StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
   other.capacity_ == 0 ? data_ = nullptr : this->data_ = new T[other.capacity_];
   
 
-  for(size_t i = 0; i < other.size_; i++)
+  for(std::size_t i = 0; i < other.size_; i++)
     this->data_[i] = other.data_[i];
 
   this->size_ = other.size_;
