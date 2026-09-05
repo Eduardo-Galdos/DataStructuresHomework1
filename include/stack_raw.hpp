@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STACKRAW
+#define STACKRAW
 
 #include <cstddef>
 #include <stdexcept>
@@ -38,27 +39,83 @@ public:
 
 template<typename T>
 void StackRaw<T>::grow() {
-  throw std::logic_error("TODO StackRaw::grow");
+  if(capacity_ == 0)
+    capacity_ = 1;
+
+  capacity_ = capacity_ * 2;
+  T* dataTemp = new T[capacity_];
+
+  for(size_t i = 0; i < size_; i++)
+    dataTemp[i] = data_[i];
+
+  delete[] data_; 
+  data_ = dataTemp;
+
+  return;
 }
 
 template<typename T>
-StackRaw<T>::StackRaw(const StackRaw &) {
-  throw std::logic_error("TODO StackRaw copy constructor");
+
+//copia profunda, y por si acaso error si quieres copiar algo vacio ya q intentaria acceder a un nullptr y moriria creo
+
+StackRaw<T>::StackRaw(const StackRaw &other) {
+  if(other.data_== nullptr)
+    throw std::logic_error("Cant copy an empty stack");
+
+  this->data_ = new T[other.capacity_];
+
+  for(size_t i = 0; i < other.size_; i++)
+    this->data_[i] = other.data_[i];
+  
+
+  this->size_ = other.size_;
+  this->capacity_ = other.capacity_;
 }
 
 template<typename T>
-StackRaw<T>::StackRaw(StackRaw &&) noexcept {
-  // TODO: transferir ownership y dejar el origen vacío.
+StackRaw<T>::StackRaw(StackRaw &&other) noexcept {
+  
+  this->data_ = other.data_;
+  this->size_ = other.size_;
+  this->capacity_ = other.capacity_;
+
+  other.data_ = nullptr;
+  other.size_ = 0;
+  other.capacity_ = 0;
 }
 
 template<typename T>
-StackRaw<T> &StackRaw<T>::operator=(const StackRaw &) {
-  throw std::logic_error("TODO StackRaw copy assignment");
+StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
+  if(other.data_ == nullptr)
+    throw std::logic_error("Cant copy an empty stack");
+  
+  delete[] this->data_;
+  this->data_ = new T[other.capacity_];
+
+  for(size_t i = 0; i < other.size_; i++)
+    this->data_[i] = other.data_[i];
+
+  this->size_ = other.size_;
+  this->capacity_ = other.capacity_;
+
+  return *this;
 }
 
 template<typename T>
-StackRaw<T> &StackRaw<T>::operator=(StackRaw &&) noexcept {
-  // TODO: liberar el recurso actual, transferir ownership y vaciar el origen.
+StackRaw<T> &StackRaw<T>::operator=(StackRaw &&other) noexcept {
+  if(this == &other)
+    throw std::logic_error("Cant move and object to itself");
+  
+  delete[] this->data_;
+
+  this->data_ = other.data_;
+  this->capacity_ = other.capacity_;
+  this->size_ = other.size_;
+
+  other.data_ = nullptr;
+  other.capacity_ = 0;
+  other.size_ = 0;
+
   return *this;
 }
 
@@ -68,26 +125,55 @@ StackRaw<T>::~StackRaw() {
 }
 
 template<typename T>
-void StackRaw<T>::push(const T &) {
-  throw std::logic_error("TODO StackRaw::push(const T&)");
+void StackRaw<T>::push(const T &x) {
+  
+  if(size_ == capacity_)
+      grow();
+  data_[size_] = x;
+  size_++;
+
+  return;    
 }
 
 template<typename T>
-void StackRaw<T>::push(T &&) {
+void StackRaw<T>::push(T &&x) {
   throw std::logic_error("TODO StackRaw::push(T&&)");
+  if(size_ == capacity_)
+    grow();
+
+  data_[size_] = std::move(x);
+  size_++;
+
+  return;
 }
 
 template<typename T>
 void StackRaw<T>::pop() {
-  throw std::logic_error("TODO StackRaw::pop");
+  if(empty())
+    throw std::logic_error("Cant pop an empty stack");  
+  size_--;
+  
+  return;
 }
 
 template<typename T>
 T &StackRaw<T>::top() {
-  throw std::logic_error("TODO StackRaw::top");
+  if(empty())
+    throw std::logic_error("Cant get top of an empty stack");
+
+  return data_[size_ - 1];
 }
+
+//no termino de entender porq hay dos top uno q modifica el objeto y otro q no
 
 template<typename T>
 const T &StackRaw<T>::top() const {
-  throw std::logic_error("TODO StackRaw::top const");
+  if(empty)
+    throw std::logic_error("Cant get top of and empty stack");
+
+  return data_[size - 1];
 }
+
+
+
+#endif
