@@ -59,7 +59,7 @@ template<typename T>
 
 StackRaw<T>::StackRaw(const StackRaw &other) {
 
-  this->data_ = new T[other.capacity_];
+  other.capacity_ == 0 ? this->data = nullptr : this->data_ =  new T[other.capacity_];
 
   for(size_t i = 0; i < other.size_; i++)
     this->data_[i] = other.data_[i];
@@ -84,8 +84,11 @@ StackRaw<T>::StackRaw(StackRaw &&other) noexcept {
 template<typename T>
 StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
   
+  if(this = &other)
+    return *this;
   delete[] this->data_;
-  this->data_ = new T[other.capacity_];
+  other.capacity_ == 0 ? data_ = nullptr : this->data_ = new T[other.capacity_];
+  
 
   for(size_t i = 0; i < other.size_; i++)
     this->data_[i] = other.data_[i];
@@ -163,9 +166,9 @@ T &StackRaw<T>::top() {
 template<typename T>
 const T &StackRaw<T>::top() const {
   if(empty())
-    throw std::logic_error("Cant get top of and empty stack");
+    throw std::out_of_range("Cant get top of and empty stack");
 
-  return data_[size - 1];
+  return data_[size_ - 1];
 }
 
 
