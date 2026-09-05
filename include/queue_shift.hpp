@@ -51,7 +51,7 @@ void QueueShift<T>::grow() {
   T* dataTemp = new T[capacity_];
 
   for(size_t i = 0; i < size_; i++){
-    dataTemp[i] = data_[i];
+    dataTemp[i] = std::move(data_[i]);
     moves_++;
   }
   
@@ -64,8 +64,6 @@ void QueueShift<T>::grow() {
 
 template<typename T>
 QueueShift<T>::QueueShift(const QueueShift &other) {
-  if(other.data_ == nullptr)
-    throw std::logic_error("Cant construct from a null data");
 
   data_ = new T[other.capacity_];
   for(size_t i = 0; i < other.size_; i++)
@@ -92,8 +90,6 @@ QueueShift<T>::QueueShift(QueueShift &&other) noexcept {
 
 template<typename T>
 QueueShift<T> &QueueShift<T>::operator=(const QueueShift &other) {
-  if(other.data_ == nullptr)
-    throw std::logic_error("Cant copy from a null data");
 
   delete[] data_;
   data_ = new T[other.capacity_];
@@ -112,7 +108,7 @@ template<typename T>
 QueueShift<T> &QueueShift<T>::operator=(QueueShift &&other) noexcept {
   // TODO: liberar el recurso actual, transferir ownership y vaciar el origen.
   if(this == &other)
-    throw std::logic_error("Cant move an object to itself");
+    return *this;
 
   delete[] data_;
   
@@ -147,7 +143,6 @@ void QueueShift<T>::push(const T &x) {
 
 template<typename T>
 void QueueShift<T>::push(T &&x) {
-  throw std::logic_error("TODO QueueShift::push(T&&)");
   if(size_ == capacity_)
     grow();
 
@@ -160,10 +155,10 @@ void QueueShift<T>::push(T &&x) {
 template<typename T>
 void QueueShift<T>::pop() {
   if(empty())
-    throw std::logic_error("Cant pop an empty queue");
+    throw std::out_of_range("Cant pop an empty queue");
 
-  for(size_t i; i < size_ - 1; i++){
-    data_[i] = data_[i + 1];
+  for(size_t i = 0; i < size_ - 1; i++){
+    data_[i] = std::move(data_[i + 1]);
     moves_++;
   }
 
@@ -175,15 +170,15 @@ void QueueShift<T>::pop() {
 template<typename T>
 T &QueueShift<T>::front() {
   if(empty())
-    throw std::logic_error("Cant get front of an empty queue");
-  return data_[size_ - 1];
+    throw std::out_of_range("Cant get front of an empty queue");
+  return data_[0];
 }
 
 template<typename T>
 const T &QueueShift<T>::front() const {
   if(empty())
-    throw std::logic_error("Cant get front of an empty queue");
-  return data_[size_ - 1];
+    throw std::out_of_range("Cant get front of an empty queue");
+  return data_[0];
 }
 
 #endif
