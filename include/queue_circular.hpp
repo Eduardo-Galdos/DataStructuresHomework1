@@ -102,7 +102,7 @@ QueueCircular<T> &QueueCircular<T>::operator=(const QueueCircular &other) {
   if(this == &other)
     return *this;
   
-  delete data_;
+  delete[] data_;
   other.capacity_ == 0 ? data_ = nullptr : data_ = new T[other.capacity_];
   
   for(std::size_t i = 0; i < other.size_; i++)
@@ -121,7 +121,7 @@ QueueCircular<T> &QueueCircular<T>::operator=(QueueCircular &&other) noexcept {
   if(this == &other)
     return *this;
 
-  delete data_;
+  delete[] data_;
 
   data_ = other.data_;
   head_ = other.head_;
