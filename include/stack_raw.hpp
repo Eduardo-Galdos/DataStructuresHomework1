@@ -46,7 +46,7 @@ void StackRaw<T>::grow() {
   T* dataTemp = new T[capacity_];
 
   for(size_t i = 0; i < size_; i++)
-    dataTemp[i] = data_[i];
+    dataTemp[i] = std::move(data_[i]);
 
   delete[] data_; 
   data_ = dataTemp;
@@ -56,11 +56,8 @@ void StackRaw<T>::grow() {
 
 template<typename T>
 
-//copia profunda, y por si acaso error si quieres copiar algo vacio ya q intentaria acceder a un nullptr y moriria creo
 
 StackRaw<T>::StackRaw(const StackRaw &other) {
-  if(other.data_== nullptr)
-    throw std::logic_error("Cant copy an empty stack");
 
   this->data_ = new T[other.capacity_];
 
@@ -86,8 +83,6 @@ StackRaw<T>::StackRaw(StackRaw &&other) noexcept {
 
 template<typename T>
 StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
-  if(other.data_ == nullptr)
-    throw std::logic_error("Cant copy an empty stack");
   
   delete[] this->data_;
   this->data_ = new T[other.capacity_];
@@ -104,7 +99,7 @@ StackRaw<T> &StackRaw<T>::operator=(const StackRaw &other) {
 template<typename T>
 StackRaw<T> &StackRaw<T>::operator=(StackRaw &&other) noexcept {
   if(this == &other)
-    throw std::logic_error("Cant move and object to itself");
+    return *this;
   
   delete[] this->data_;
 
@@ -137,7 +132,6 @@ void StackRaw<T>::push(const T &x) {
 
 template<typename T>
 void StackRaw<T>::push(T &&x) {
-  throw std::logic_error("TODO StackRaw::push(T&&)");
   if(size_ == capacity_)
     grow();
 
@@ -150,7 +144,7 @@ void StackRaw<T>::push(T &&x) {
 template<typename T>
 void StackRaw<T>::pop() {
   if(empty())
-    throw std::logic_error("Cant pop an empty stack");  
+    throw std::out_of_range("Cant pop an empty stack");  
   size_--;
   
   return;
@@ -159,16 +153,16 @@ void StackRaw<T>::pop() {
 template<typename T>
 T &StackRaw<T>::top() {
   if(empty())
-    throw std::logic_error("Cant get top of an empty stack");
+    throw std::out_of_range("Cant get top of an empty stack");
 
   return data_[size_ - 1];
 }
 
-//no termino de entender porq hay dos top uno q modifica el objeto y otro q no
+//top q modifica esta hecho para un s.top = T
 
 template<typename T>
 const T &StackRaw<T>::top() const {
-  if(empty)
+  if(empty())
     throw std::logic_error("Cant get top of and empty stack");
 
   return data_[size - 1];
